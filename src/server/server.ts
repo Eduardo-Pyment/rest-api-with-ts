@@ -1,5 +1,7 @@
 import express from "express";
 import "dotenv/config";
+
+import "./shared/services/LocalizationYup";
 import { router } from "./routes";
 
 const server = express();
