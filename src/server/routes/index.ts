@@ -10,6 +10,6 @@ router.get("/", (_, res) => {
   return res.send("Call Successful!");
 });
 
-router.post("/cities",CitiesController.createValidation, CitiesController.create);
+router.post("/cities", CitiesController.createValidation, CitiesController.create);
 
 export { router };
