@@ -1,7 +1,6 @@
 import { Router } from "express";
-// import { StatusCodes } from "http-status-codes";
-
 import { CitiesController } from "./../controllers";
+
 CitiesController.create;
 
 const router = Router();
