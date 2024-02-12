@@ -15,8 +15,13 @@ export const deleteByIdValidation = validation((getSchema) => ({
 
 // Controller (only executed after bodyValidation)
 export const deleteById = async (req: Request<IParamsProps>, res: Response) => {
-  console.log(req.params);
-
-  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Not implemented");
+  if (Number(req.params.id) === 99999) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: "Entry not found"
+      }
+    });
+  }
+  return res.status(StatusCodes.NO_CONTENT).send();
 };
 
