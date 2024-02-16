@@ -1,4 +1,5 @@
 export interface ICities {
   id: number;
-  nome: string;
+  name: string;
+  state: string;
 }
