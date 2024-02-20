@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validation } from "../../shared/middleware";
 import { StatusCodes } from "http-status-codes";
 import * as yup from "yup";
+import { CitiesProvider } from "../../database/providers/cities";
 
 interface IParamsProps {
   id?: number;
@@ -15,11 +16,22 @@ export const getByIdValidation = validation((getSchema) => ({
 
 // Controller (only executed after bodyValidation)
 export const getById = async (req: Request<IParamsProps>, res: Response) => {
-  if (Number(req.params.id) === 99999) return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ errors: { default: "Register not found" } });
+  if (!req.params.id) {
+    return res.status(StatusCodes.BAD_REQUEST).send({
+      errors: {
+        default: "Id is required",
+      },
+    });
+  }
 
-  return res.status(StatusCodes.OK).json({
-    id: req.params.id,
-    name: "Example Name",
-  });
+  const result = await CitiesProvider.getById(req.params.id);
+  if (result instanceof Error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: result.message,
+      },
+    });
+  }
+
+  return res.status(StatusCodes.OK).json({ result });
 };
-

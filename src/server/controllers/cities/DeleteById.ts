@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validation } from "../../shared/middleware";
 import { StatusCodes } from "http-status-codes";
 import * as yup from "yup";
+import { CitiesProvider } from "../../database/providers/cities";
 
 interface IParamsProps {
   id?: number;
@@ -15,13 +16,23 @@ export const deleteByIdValidation = validation((getSchema) => ({
 
 // Controller (only executed after bodyValidation)
 export const deleteById = async (req: Request<IParamsProps>, res: Response) => {
-  if (Number(req.params.id) === 99999) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+  // Checks if there is id is undefined
+  if (!req.params.id) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
       errors: {
-        default: "Entry not found"
+        default: "Id is required"
       }
     });
   }
+  const result = await CitiesProvider.deleteById(req.params.id);
+  if (result instanceof Error) {
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      errors: {
+        default: result.message
+      }
+    });
+  }
+
   return res.status(StatusCodes.NO_CONTENT).send();
 };
 
