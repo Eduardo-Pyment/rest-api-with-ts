@@ -14,7 +14,7 @@ interface IBodyProps extends Omit<ICities, "id"> { } // Specifies types for requ
 export const updateByIdValidation = validation((getSchema) => ({
   body: getSchema<IBodyProps>(yup.object().shape({
     name: yup.string().required().min(3),
-    state: yup.string().required().min(2),
+    state: yup.string().optional().min(2),
   })),
   params: getSchema<IParamsProps>(yup.object().shape({
     id: yup.number().integer().required().moreThan(0),
