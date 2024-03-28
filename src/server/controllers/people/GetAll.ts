@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { validation } from "../../shared/middleware";
 import { StatusCodes } from "http-status-codes";
 import * as yup from "yup";
-import { CitiesProvider } from "../../database/providers/cities";
+import { PeopleProvider } from "../../database/providers/people";
 
 interface IQueryProps {
-  id?: number
   page?: number;
   limit?: number;
   filter?: string;
@@ -13,7 +12,6 @@ interface IQueryProps {
 
 export const getAllValidation = validation((getSchema) => ({
   body: getSchema<IQueryProps>(yup.object().shape({
-    id: yup.number().integer().optional().default(0),
     page: yup.number().optional().moreThan(0).default(1),
     limit: yup.number().optional().moreThan(0).default(7),
     filter: yup.string().optional().default("")
@@ -22,8 +20,8 @@ export const getAllValidation = validation((getSchema) => ({
 
 // Controller (only executed after bodyValidation)
 export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Response) => {
-  const result = await CitiesProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || "", Number(req.query.id));
-  const count = await CitiesProvider.count(req.query.filter);
+  const result = await PeopleProvider.getAll(req.query.page || 1, req.query.limit || 7, req.query.filter || "");
+  const count = await PeopleProvider.count(req.query.filter);
 
   if (result instanceof Error) {
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -37,11 +35,7 @@ export const getAll = async (req: Request<{}, {}, {}, IQueryProps>, res: Respons
 
   res.setHeader("access-control-expose-headers", "x-total-count");
   res.setHeader("x-total-count", count);
-  return res.status(StatusCodes.OK).json([
-    {
-      id: 1,
-      name: "Example Cities",
-    }
-  ]);
+  
+  return res.status(StatusCodes.OK).json(result);
 };
 
